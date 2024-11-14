@@ -37,14 +37,16 @@ essay_prompt = PromptTemplate(
     """,
 )
 
-first_chain = title_prompt | llm | StrOutputParser()
-second_chain = essay_prompt | llm | JsonOutputParser()
+def create_overall_chain(emotion):
+    first_chain = title_prompt | llm | StrOutputParser()
+    second_chain = essay_prompt | llm | JsonOutputParser()
 
-overall_chain = (
-    first_chain 
-    | (lambda title: {"title": title, "emotion": emotion}) 
-    | second_chain
-)
+    overall_chain = (
+        first_chain
+        | (lambda title: {"title": title, "emotion": emotion})
+        | second_chain
+    )
+    return overall_chain
 
 st.title("Essay Writer")
 
@@ -52,5 +54,6 @@ topic = st.text_input("Input Topic")
 emotion = st.text_input("Input Emotion")
 
 if topic and emotion:
+    overall_chain = create_overall_chain(emotion)
     response = overall_chain.invoke({"topic": topic})
     st.write(response)
