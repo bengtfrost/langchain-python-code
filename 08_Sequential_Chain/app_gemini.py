@@ -48,7 +48,7 @@ def create_overall_chain(emotion):
     )
     return overall_chain
 
-st.title("Essay Writer")
+st.title("Essay Writer Updated")
 
 topic = st.text_input("Input Topic")
 emotion = st.text_input("Input Emotion")
