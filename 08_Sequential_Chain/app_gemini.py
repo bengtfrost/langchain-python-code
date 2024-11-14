@@ -7,10 +7,13 @@ from langchain.globals import set_debug
 
 set_debug(True)
 
+# Load the Google Gemini API key from environment variables
 GOOGLE_GEMINI_KEY = config("GOOGLE_GEMINI_KEY")
 
+# Initialize the language model
 llm = ChatGoogleGenerativeAI(model="gemini-pro", google_api_key=GOOGLE_GEMINI_KEY)
 
+# Define the prompt template for generating a title
 title_prompt = PromptTemplate(
     input_variables=["topic"],
     template="""
@@ -22,6 +25,7 @@ title_prompt = PromptTemplate(
     """,
 )
 
+# Define the prompt template for generating an essay
 essay_prompt = PromptTemplate(
     input_variables=["title", "emotion"],
     template="""
@@ -38,6 +42,15 @@ essay_prompt = PromptTemplate(
 )
 
 def create_overall_chain(emotion):
+    """
+    Create a chain that first generates a title and then an essay based on the title and emotion.
+
+    Args:
+        emotion (str): The emotion to be conveyed in the essay.
+
+    Returns:
+        Chain: The overall chain for generating a title and an essay.
+    """
     first_chain = title_prompt | llm | StrOutputParser()
     second_chain = essay_prompt | llm | JsonOutputParser()
 
@@ -48,12 +61,26 @@ def create_overall_chain(emotion):
     )
     return overall_chain
 
-st.title("Essay Writer Updated")
+def main():
+    """
+    Main function to run the Streamlit app.
+    """
+    st.title("Essay Writer Updated")
 
-topic = st.text_input("Input Topic")
-emotion = st.text_input("Input Emotion")
+    # Input fields for topic and emotion
+    topic = st.text_input("Input Topic")
+    emotion = st.text_input("Input Emotion")
 
-if topic and emotion:
-    overall_chain = create_overall_chain(emotion)
-    response = overall_chain.invoke({"topic": topic})
-    st.write(response)
+    # Validate inputs
+    if topic and emotion:
+        try:
+            overall_chain = create_overall_chain(emotion)
+            response = overall_chain.invoke({"topic": topic})
+            st.write(response)
+        except Exception as e:
+            st.error(f"An error occurred: {e}")
+    else:
+        st.warning("Please provide both a topic and an emotion.")
+
+if __name__ == "__main__":
+    main()
