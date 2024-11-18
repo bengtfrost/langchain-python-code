@@ -4,23 +4,3 @@
 # Aider-related files and directories
 .aider*
 
-# Python bytecode
-__pycache__/
-*.py[cod]
-
-# Distribution / packaging
-dist/
-build/
-*.egg-info/
-
-# IDE-specific files
-.vscode/
-.idea/
-
-# Temporary files
-*.log
-*.tmp
-
-# Operating system-related files
-.DS_Store
-Thumbs.db
