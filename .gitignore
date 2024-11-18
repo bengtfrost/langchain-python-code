@@ -4,3 +4,6 @@
 # Aider-related files and directories
 .aider*
 
+# Environment file
+.env
+
