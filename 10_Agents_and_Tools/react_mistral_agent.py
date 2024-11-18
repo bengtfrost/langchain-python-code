@@ -2,13 +2,11 @@ from decouple import config
 from langchain import hub
 from langchain.agents import create_react_agent, AgentExecutor
 from langchain_community.agent_toolkits.load_tools import load_tools
-from langchain_google_genai import ChatGoogleGenerativeAI
+from langchain_mistralai import ChatMistralAI
 
-GOOGLE_GEMINI_KEY = config("GOOGLE_GEMINI_KEY")
+MISTRAL_KEY = config("MISTRAL_KEY")
 
-llm = ChatGoogleGenerativeAI(
-    model="gemini-1.5-pro-latest", google_api_key=GOOGLE_GEMINI_KEY
-)
+llm = ChatMistralAI(model="mistral-large-latest", api_key=MISTRAL_KEY)
 
 prompt = hub.pull("hwchase17/react")
 prompt.pretty_print()
