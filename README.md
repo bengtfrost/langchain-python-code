@@ -20,4 +20,3 @@ Starting from Chapter 5, use streamlit to run the application:
 streamlit run 05_Adding_Streamlit_GUI/app_gpt.py
 ```
 
-For how these applications work and more, you can get the book at https://mybook.to/lc-py
