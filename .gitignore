@@ -5,6 +5,7 @@
 # Aider-related files and directories
 .aider*
 
-# Environment file
+# Environment variables
 .env
-
+.env.*
+!.env.example
