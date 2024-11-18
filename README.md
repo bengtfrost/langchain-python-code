@@ -1,4 +1,4 @@
-The code repository for the _LangChain Programming For Beginners_ book by _Nathan Sebhastian_.
+Added MistralAI code and customized _LangChain Programming For Beginners_ scripts from _Nathan Sebhastian_.
 
 Before running the scripts, install the required dependencies using pip as shown below:
 
