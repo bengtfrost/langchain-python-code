@@ -1,5 +1,5 @@
 from decouple import config
-from langchain_google_genai import ChatGoogleGenerativeAI
+from langchain_mistralai import ChatMistralAI
 import streamlit as st
 
 # Adding History
@@ -7,10 +7,10 @@ from langchain_core.prompts import ChatPromptTemplate, MessagesPlaceholder
 from langchain_community.chat_message_histories import StreamlitChatMessageHistory
 from langchain_core.runnables.history import RunnableWithMessageHistory
 
-GOOGLE_GEMINI_KEY = config("GOOGLE_GEMINI_KEY")
+MISTRALAI_KEY = config("MISTRALAI_KEY")
 
-llm = ChatGoogleGenerativeAI(
-    model="gemini-1.5-pro-latest", google_api_key=GOOGLE_GEMINI_KEY
+llm = ChatMistralAI(
+    model="mistral-large-latest", api_key=MISTRALAI_KEY
 )
 
 prompt = ChatPromptTemplate.from_messages(
