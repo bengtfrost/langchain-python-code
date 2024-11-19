@@ -1,5 +1,5 @@
 from decouple import config
-from langchain_openai import ChatOpenAI, OpenAIEmbeddings
+from langchain_mistralai import ChatMistralAI, MistralEmbeddingsAI
 from langchain_core.prompts import ChatPromptTemplate
 from langchain_community.document_loaders import TextLoader
 from langchain.text_splitter import RecursiveCharacterTextSplitter
@@ -7,9 +7,11 @@ from langchain_community.vectorstores import Chroma
 from langchain.chains.combine_documents import create_stuff_documents_chain
 from langchain.chains import create_retrieval_chain
 
-OPENAI_KEY = config("OPENAI_KEY")
+MISTRAL_KEY = config("MISTRAL_KEY")
 
-llm = ChatOpenAI(model="gpt-4o", api_key=OPENAI_KEY)
+llm = ChatMistralAI(
+    model="mistral-large-latest", mistral_api_key=MISTRAL_KEY
+)
 
 loader = TextLoader("./ai-discussion.txt")
 documents = loader.load()
@@ -17,8 +19,9 @@ text_splitter = RecursiveCharacterTextSplitter(chunk_size=1000, chunk_overlap=20
 
 chunks = text_splitter.split_documents(documents)
 
-embeddings = OpenAIEmbeddings(openai_api_key=OPENAI_KEY)
-
+embeddings = MistralEmbeddingsAI(
+    mistral_api_key=MISTRAL_KEY, model="mistral-embedding-latest"
+)
 vector_store = Chroma.from_documents(chunks, embeddings)
 
 retriever = vector_store.as_retriever()

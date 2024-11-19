@@ -7,7 +7,7 @@ from langchain_core.prompts import ChatPromptTemplate
 from langchain.chains.combine_documents import create_stuff_documents_chain
 import streamlit as st
 
-from langchain_mistralai import ChatMistral, MistralEmbeddings
+from langchain_mistralai import ChatMistralAI, MistralEmbeddingsAI
 
 # Adding History
 from langchain_core.prompts import ChatPromptTemplate, MessagesPlaceholder
@@ -16,7 +16,7 @@ from langchain_core.runnables.history import RunnableWithMessageHistory
 
 MISTRAL_KEY = config("MISTRAL_KEY")
 
-llm = ChatMistral(
+llm = ChatMistralAI(
     model="mistral-large-latest", mistral_api_key=MISTRAL_KEY
 )
 
@@ -26,8 +26,8 @@ text_splitter = RecursiveCharacterTextSplitter(chunk_size=1000, chunk_overlap=20
 
 chunks = text_splitter.split_documents(documents)
 
-embeddings = MistralEmbeddings(
-    mistral_api_key=MISTRAL_KEY, model="models/embedding-001"
+embeddings = MistralEmbeddingsAI(
+    mistral_api_key=MISTRAL_KEY, model="mistral-embedding-latest"
 )
 vector_store = Chroma.from_documents(chunks, embeddings)
 
