@@ -4,7 +4,7 @@ from langchain.agents import create_react_agent, AgentExecutor
 from langchain_community.agent_toolkits.load_tools import load_tools
 from langchain_ollama.chat_models import ChatOllama
 
-llm = ChatOllama(model="mistral")
+llm = ChatOllama(model="gemma2:2b")
 
 prompt = hub.pull("hwchase17/react")
 

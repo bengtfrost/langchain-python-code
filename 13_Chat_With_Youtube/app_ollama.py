@@ -15,7 +15,7 @@ from langchain_core.runnables.history import RunnableWithMessageHistory
 # Import YouTubeLoader
 from langchain_community.document_loaders import YoutubeLoader
 
-llm = ChatOllama(model="mistral")
+llm = ChatOllama(model="gemma2:2b")
 
 contextualize_system_prompt = """Given a chat history and the latest user question \
 which might reference context in the chat history, formulate a standalone question \
@@ -51,7 +51,6 @@ question_answer_chain = create_stuff_documents_chain(llm, prompt)
 
 history = StreamlitChatMessageHistory()
 
-
 def process_youtube_url(url):
     with st.spinner("Processing YouTube video..."):
         loader = YoutubeLoader.from_youtube_url(url)
@@ -62,7 +61,7 @@ def process_youtube_url(url):
                 chunk_size=1000, chunk_overlap=200
             )
             chunks = text_splitter.split_documents(docs)
-            embeddings = OllamaEmbeddings(model="mistral")
+            embeddings = OllamaEmbeddings(model="gemma2:2b")
             vector_store = Chroma.from_documents(chunks, embeddings)
             retriever = vector_store.as_retriever()
             history_aware_retriever = create_history_aware_retriever(
@@ -83,11 +82,9 @@ def process_youtube_url(url):
         else:
             st.error("Video has no transcript. Please try another video")
 
-
 def clear_history():
     if "langchain_messages" in st.session_state:
         del st.session_state["langchain_messages"]
-
 
 st.title("Ask YouTube Video")
 

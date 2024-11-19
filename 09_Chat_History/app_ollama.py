@@ -9,7 +9,7 @@ from langchain_core.runnables.history import RunnableWithMessageHistory
 
 GOOGLE_GEMINI_KEY = config("GOOGLE_GEMINI_KEY")
 
-llm = ChatOllama(model="mistral")
+llm = ChatOllama(model="gemma2:2b")
 
 prompt = ChatPromptTemplate.from_messages(
     [

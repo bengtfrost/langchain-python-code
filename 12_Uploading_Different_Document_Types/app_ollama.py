@@ -14,7 +14,7 @@ from langchain_core.runnables.history import RunnableWithMessageHistory
 
 import os
 
-llm = ChatOllama(model="mistral")
+llm = ChatOllama(model="gemma2:2b")
 
 contextualize_system_prompt = """Given a chat history and the latest user question \
 which might reference context in the chat history, formulate a standalone question \
@@ -78,7 +78,7 @@ def process_file(file):
             chunk_size=1000, chunk_overlap=200
         )
         chunks = text_splitter.split_documents(docs)
-        embeddings = OllamaEmbeddings(model="mistral")
+        embeddings = OllamaEmbeddings(model="gemma2:2b")
         vector_store = Chroma.from_documents(chunks, embeddings)
         retriever = vector_store.as_retriever()
         history_aware_retriever = create_history_aware_retriever(
@@ -108,8 +108,6 @@ add_file = st.button("Submit File", on_click=clear_history)
 
 if uploaded_file and add_file:
     process_file(uploaded_file)
-
-
 
 for message in st.session_state["langchain_messages"]:
     role = "user" if message.type == "human" else "assistant"

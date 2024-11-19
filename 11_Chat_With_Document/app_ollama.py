@@ -14,7 +14,7 @@ from langchain_core.prompts import ChatPromptTemplate, MessagesPlaceholder
 from langchain_community.chat_message_histories import StreamlitChatMessageHistory
 from langchain_core.runnables.history import RunnableWithMessageHistory
 
-llm = ChatOllama(model="mistral")
+llm = ChatOllama(model="gemma2:2b")
 
 loader = TextLoader("./ai-discussion.txt")
 documents = loader.load()
@@ -22,7 +22,7 @@ text_splitter = RecursiveCharacterTextSplitter(chunk_size=1000, chunk_overlap=20
 
 chunks = text_splitter.split_documents(documents)
 
-embeddings = OllamaEmbeddings(model="mistral")
+embeddings = OllamaEmbeddings(model="gemma2:2b")
 vector_store = Chroma.from_documents(chunks, embeddings)
 
 retriever = vector_store.as_retriever()

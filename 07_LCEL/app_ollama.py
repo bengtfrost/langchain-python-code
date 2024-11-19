@@ -6,7 +6,7 @@ from langchain.globals import set_debug
 
 set_debug(True)
 
-llm = ChatOllama(model="mistral")
+llm = ChatOllama(model="gemma2:2b")
 
 title_prompt = PromptTemplate(
     input_variables=["topic"],

@@ -6,7 +6,7 @@ from langchain.globals import set_debug
 
 set_debug(True)
 
-llm = ChatOllama(model="mistral")
+llm = ChatOllama(model="gemma2:2b")
 
 title_prompt = PromptTemplate(
     input_variables=["topic"],
@@ -38,8 +38,8 @@ first_chain = title_prompt | llm | StrOutputParser()
 second_chain = essay_prompt | llm | JsonOutputParser()
 
 overall_chain = (
-    first_chain 
-    | (lambda title: {"title": title, "emotion": emotion}) 
+    first_chain
+    | (lambda title: {"title": title, "emotion": emotion})
     | second_chain
 )
 

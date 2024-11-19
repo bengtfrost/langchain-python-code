@@ -7,7 +7,7 @@ from langchain_community.chat_message_histories import StreamlitChatMessageHisto
 from langchain_core.runnables.history import RunnableWithMessageHistory
 import os, base64
 
-llm = ChatOllama(model="bakllava")
+llm = ChatOllama(model="gemma2:2b")
 
 prompt = ChatPromptTemplate.from_messages(
     [
@@ -31,11 +31,9 @@ prompt = ChatPromptTemplate.from_messages(
 
 history = StreamlitChatMessageHistory()
 
-
 def encode_image(image_path):
     with open(image_path, "rb") as image_file:
         return base64.b64encode(image_file.read()).decode("utf-8")
-
 
 def process_image(file):
     with st.spinner("Processing image..."):
@@ -47,7 +45,6 @@ def process_image(file):
         st.session_state.encoded_image = image
         st.success("Image encoded. Ask your questions")
 
-
 chain = prompt | llm
 
 chain_with_history = RunnableWithMessageHistory(
@@ -57,11 +54,9 @@ chain_with_history = RunnableWithMessageHistory(
     history_messages_key="chat_history",
 )
 
-
 def clear_history():
     if "langchain_messages" in st.session_state:
         del st.session_state["langchain_messages"]
-
 
 st.title("Chat With Image")
 
