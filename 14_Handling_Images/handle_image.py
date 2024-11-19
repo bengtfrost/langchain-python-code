@@ -1,17 +1,16 @@
 from decouple import config
-from langchain_openai import ChatOpenAI
+from langchain_mistralai import ChatMistralAI
 from langchain_core.prompts import ChatPromptTemplate
 
 import base64
 
-OPENAI_KEY = config("OPENAI_KEY")
+MISTRALAI_KEY = config("MISTRALAI_KEY")
 
-llm = ChatOpenAI(model="gpt-4o", api_key=OPENAI_KEY)
+llm = ChatMistralAI(model="mistral-large-latest", api_key=MISTRALAI_KEY)
 
 def encode_image(image_path):
     with open(image_path, "rb") as image_file:
         return base64.b64encode(image_file.read()).decode("utf-8")
-
 
 image = encode_image("./image-1.jpg")
 
