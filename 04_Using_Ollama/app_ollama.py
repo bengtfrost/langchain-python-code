@@ -1,6 +1,6 @@
 from langchain_ollama.chat_models import ChatOllama
 
-llm = ChatOllama(model="gemma:2b")
+llm = ChatOllama(model="gemma2:2b")
 
 print("Q & A With AI")
 print("=============")

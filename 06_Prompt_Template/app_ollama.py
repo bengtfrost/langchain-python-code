@@ -5,8 +5,8 @@ from langchain.prompts import PromptTemplate
 prompt = PromptTemplate(
     input_variables=["country", "paragraph", "language"],
     template="""
-    You are a currency expert. You give information about a specific currency used in a specific country. 
-    Avoid giving information about fictional places. 
+    You are a currency expert. You give information about a specific currency used in a specific country.
+    Avoid giving information about fictional places.
     If the country is fictional or non-existent, answer: I don't know.
 
     Answer the question: What is the currency of {country}?
@@ -15,7 +15,7 @@ prompt = PromptTemplate(
     """,
 )
 
-llm = ChatOllama(model="gemma:2b")
+llm = ChatOllama(model="gemma2:2b")
 
 st.title("Currency Info")
 
