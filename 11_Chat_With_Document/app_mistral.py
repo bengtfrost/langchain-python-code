@@ -1,52 +1,41 @@
 from decouple import config
+import os
+import time
+import streamlit as st
+from langchain_mistralai import ChatMistralAI
+from langchain_mistralai.embeddings import MistralAIEmbeddings
+from langchain_core.prompts import ChatPromptTemplate
 from langchain_community.document_loaders import TextLoader
 from langchain.text_splitter import RecursiveCharacterTextSplitter
 from langchain_community.vectorstores import Chroma
-from langchain.chains import create_retrieval_chain, create_history_aware_retriever
-from langchain_core.prompts import ChatPromptTemplate
 from langchain.chains.combine_documents import create_stuff_documents_chain
-import streamlit as st
+from langchain.chains import create_retrieval_chain
 
-from langchain_mistralai import ChatMistralAI, MistralEmbeddingsAI
-
-# Adding History
-from langchain_core.prompts import ChatPromptTemplate, MessagesPlaceholder
-from langchain_community.chat_message_histories import StreamlitChatMessageHistory
-from langchain_core.runnables.history import RunnableWithMessageHistory
-
+# Load the MISTRAL_KEY and HF_TOKEN from the environment variables
 MISTRAL_KEY = config("MISTRAL_KEY")
+HF_TOKEN = config("HF_TOKEN")
+
+# Set the HF_TOKEN environment variable
+# This token is used for authentication with the Hugging Face API
+os.environ["HF_TOKEN"] = HF_TOKEN
 
 llm = ChatMistralAI(
     model="mistral-large-latest", mistral_api_key=MISTRAL_KEY
 )
 
-loader = TextLoader("./ai-discussion.txt")
+loader = TextLoader("11_Chat_With_Document/ai-discussion.txt")
 documents = loader.load()
 text_splitter = RecursiveCharacterTextSplitter(chunk_size=1000, chunk_overlap=200)
 
 chunks = text_splitter.split_documents(documents)
 
-embeddings = MistralEmbeddingsAI(
-    mistral_api_key=MISTRAL_KEY, model="mistral-embedding-latest"
+# Mistral embeddings are using HF_TOKEN for the rag
+embeddings = MistralAIEmbeddings(
+    mistral_api_key=MISTRAL_KEY, model="mistral-embed"
 )
 vector_store = Chroma.from_documents(chunks, embeddings)
 
 retriever = vector_store.as_retriever()
-
-contextualize_system_prompt = """Given a chat history and the latest user question \
-which might reference context in the chat history, formulate a standalone question \
-which can be understood without the chat history. Do NOT answer the question, \
-just reformulate it if needed and otherwise return it as is."""
-contextualize_prompt = ChatPromptTemplate.from_messages(
-    [
-        ("system", contextualize_system_prompt),
-        MessagesPlaceholder("chat_history"),
-        ("human", "{input}"),
-    ]
-)
-history_aware_retriever = create_history_aware_retriever(
-    llm, retriever, contextualize_prompt
-)
 
 system_prompt = (
     "You are an assistant for question-answering tasks. "
@@ -61,39 +50,32 @@ system_prompt = (
 prompt = ChatPromptTemplate.from_messages(
     [
         ("system", system_prompt),
-        MessagesPlaceholder("chat_history"),
         ("human", "{input}"),
     ]
 )
 
 question_answer_chain = create_stuff_documents_chain(llm, prompt)
-
 rag_chain = create_retrieval_chain(retriever, question_answer_chain)
 
-history = StreamlitChatMessageHistory()
+st.title("Chat with Document")
 
-conversational_rag_chain = RunnableWithMessageHistory(
-    rag_chain,
-    lambda session_id: history,
-    input_messages_key="input",
-    history_messages_key="chat_history",
-    output_messages_key="answer",
-)
-
-st.title("Chat With Document")
-
-for message in st.session_state["langchain_messages"]:
-    role = "user" if message.type == "human" else "assistant"
-    with st.chat_message(role):
-        st.markdown(message.content)
-
-question = st.chat_input("Your Question: ")
+question = st.text_input("Ask Your Question:")
 if question:
-    with st.chat_message("user"):
-        st.markdown(question)
-    answer_chain = conversational_rag_chain.pick("answer")
-    response = answer_chain.stream(
-        {"input": question}, config={"configurable": {"session_id": "any"}}
-    )
-    with st.chat_message("assistant"):
-        st.write_stream(response)
+    max_retries = 5
+    retry_delay = 5  # seconds
+    for attempt in range(max_retries):
+        try:
+            response = rag_chain.invoke({"input": question})
+            if "answer" in response and response["answer"]:
+                st.write(response["answer"])
+                break
+            else:
+                st.write("No answer found. Please try again.")
+        except Exception as e:
+            if "Requests rate limit exceeded" in str(e):
+                st.write(f"Rate limit exceeded. Retrying in {retry_delay} seconds...")
+                time.sleep(retry_delay)
+                retry_delay *= 2  # Exponential backoff
+            else:
+                raise
+        time.sleep(1)  # Add a delay of 1 second to handle the rate limit
