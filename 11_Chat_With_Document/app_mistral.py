@@ -88,7 +88,7 @@ prompt = ChatPromptTemplate.from_messages(
 
 # Initialize question-answer chain and RAG chain
 question_answer_chain = create_stuff_documents_chain(llm, prompt)
-rag_chain = create_retrieval_chain(retriever, question_answer_chain)
+rag_chain = create_retrieval_chain(history_aware_retriever, question_answer_chain)
 
 # Initialize chat history
 history = StreamlitChatMessageHistory()
