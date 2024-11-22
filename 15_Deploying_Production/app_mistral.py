@@ -23,10 +23,12 @@ if not mistral_key:
     st.info("Enter your Mistral API Key to continue")
     st.stop()
 
+# Initialize the language model
 llm = ChatMistral(
     model="mistral-large-latest", mistral_api_key=mistral_key
 )
 
+# Define the contextualize system prompt
 contextualize_system_prompt = """Given a chat history and the latest user question \
 which might reference context in the chat history, formulate a standalone question \
 which can be understood without the chat history. Do NOT answer the question, \
@@ -39,6 +41,7 @@ contextualize_prompt = ChatPromptTemplate.from_messages(
     ]
 )
 
+# Define the system prompt
 system_prompt = (
     "You are an assistant for question-answering tasks. "
     "Use the following pieces of retrieved context to answer "
@@ -49,6 +52,7 @@ system_prompt = (
     "{context}"
 )
 
+# Create the prompt template
 prompt = ChatPromptTemplate.from_messages(
     [
         ("system", system_prompt),
@@ -57,10 +61,13 @@ prompt = ChatPromptTemplate.from_messages(
     ]
 )
 
+# Create the question-answer chain
 question_answer_chain = create_stuff_documents_chain(llm, prompt)
 
+# Initialize the chat message history
 history = StreamlitChatMessageHistory()
 
+# Function to process the YouTube URL
 def process_youtube_url(url):
     with st.spinner("Processing YouTube video..."):
         loader = YoutubeLoader.from_youtube_url(url)
@@ -94,6 +101,7 @@ def process_youtube_url(url):
         else:
             st.error("Video has no transcript. Please try another video")
 
+# Function to clear the chat history
 def clear_history():
     if "langchain_messages" in st.session_state:
         del st.session_state["langchain_messages"]

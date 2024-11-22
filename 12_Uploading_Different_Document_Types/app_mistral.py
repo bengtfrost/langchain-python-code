@@ -118,19 +118,3 @@ if uploaded_file and add_file:
 for message in st.session_state["langchain_messages"]:
     role = "user" if message.type == "human" else "assistant"
     with st.chat_message(role):
-        st.markdown(message.content)
-
-question = st.chat_input("Your Question: ")
-if question:
-    with st.chat_message("user"):
-        st.markdown(question)
-    if "crc" in st.session_state:
-        crc = st.session_state["crc"]
-        answer_chain = crc.pick("answer")
-        response = answer_chain.stream(
-            {"input": question}, config={"configurable": {"session_id": "any"}}
-        )
-        with st.chat_message("assistant"):
-            st.write_stream(response)
-    else:
-        st.error("No document is uploaded. Upload your document first")
