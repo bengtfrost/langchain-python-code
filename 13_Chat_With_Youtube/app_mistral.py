@@ -3,16 +3,11 @@ from langchain_mistralai import ChatMistral, MistralEmbeddings
 from langchain.text_splitter import RecursiveCharacterTextSplitter
 from langchain_community.vectorstores import Chroma
 from langchain.chains import create_retrieval_chain, create_history_aware_retriever
-from langchain_core.prompts import ChatPromptTemplate
+from langchain_core.prompts import ChatPromptTemplate, MessagesPlaceholder
 from langchain.chains.combine_documents import create_stuff_documents_chain
 import streamlit as st
-
-# Adding History
-from langchain_core.prompts import ChatPromptTemplate, MessagesPlaceholder
 from langchain_community.chat_message_histories import StreamlitChatMessageHistory
 from langchain_core.runnables.history import RunnableWithMessageHistory
-
-# Import YouTubeLoader
 from langchain_community.document_loaders import YoutubeLoader
 
 MISTRAL_KEY = config("MISTRAL_KEY")
@@ -56,39 +51,51 @@ question_answer_chain = create_stuff_documents_chain(llm, prompt)
 history = StreamlitChatMessageHistory()
 
 def process_youtube_url(url):
-    with st.spinner("Processing YouTube video..."):
-        loader = YoutubeLoader.from_youtube_url(url)
+    """
+    Process the YouTube URL to extract transcript and create a conversational RAG chain.
 
-        docs = loader.load()
-        if docs:
-            text_splitter = RecursiveCharacterTextSplitter(
-                chunk_size=1000, chunk_overlap=200
-            )
-            chunks = text_splitter.split_documents(docs)
-            embeddings = MistralEmbeddings(
-                mistral_api_key=MISTRAL_KEY, model="models/embedding-001"
-            )
-            vector_store = Chroma.from_documents(chunks, embeddings)
-            retriever = vector_store.as_retriever()
-            history_aware_retriever = create_history_aware_retriever(
-                llm, retriever, contextualize_prompt
-            )
-            rag_chain = create_retrieval_chain(
-                history_aware_retriever, question_answer_chain
-            )
-            conversational_rag_chain = RunnableWithMessageHistory(
-                rag_chain,
-                lambda session_id: history,
-                input_messages_key="input",
-                history_messages_key="chat_history",
-                output_messages_key="answer",
-            )
-            st.session_state.crc = conversational_rag_chain
-            st.success("Video processed. Ask your questions")
-        else:
-            st.error("Video has no transcript. Please try another video")
+    Args:
+        url (str): The YouTube video URL.
+    """
+    try:
+        with st.spinner("Processing YouTube video..."):
+            loader = YoutubeLoader.from_youtube_url(url)
+
+            docs = loader.load()
+            if docs:
+                text_splitter = RecursiveCharacterTextSplitter(
+                    chunk_size=1000, chunk_overlap=200
+                )
+                chunks = text_splitter.split_documents(docs)
+                embeddings = MistralEmbeddings(
+                    mistral_api_key=MISTRAL_KEY, model="models/embedding-001"
+                )
+                vector_store = Chroma.from_documents(chunks, embeddings)
+                retriever = vector_store.as_retriever()
+                history_aware_retriever = create_history_aware_retriever(
+                    llm, retriever, contextualize_prompt
+                )
+                rag_chain = create_retrieval_chain(
+                    history_aware_retriever, question_answer_chain
+                )
+                conversational_rag_chain = RunnableWithMessageHistory(
+                    rag_chain,
+                    lambda session_id: history,
+                    input_messages_key="input",
+                    history_messages_key="chat_history",
+                    output_messages_key="answer",
+                )
+                st.session_state.crc = conversational_rag_chain
+                st.success("Video processed. Ask your questions")
+            else:
+                st.error("Video has no transcript. Please try another video")
+    except Exception as e:
+        st.error(f"An error occurred: {e}")
 
 def clear_history():
+    """
+    Clear the chat history from the session state.
+    """
     if "langchain_messages" in st.session_state:
         del st.session_state["langchain_messages"]
 
@@ -98,6 +105,9 @@ youtube_url = st.text_input("Input YouTube URL")
 submit_button = st.button("Submit Video", on_click=clear_history)
 if youtube_url and submit_button:
     process_youtube_url(youtube_url)
+
+if "langchain_messages" not in st.session_state:
+    st.session_state["langchain_messages"] = []
 
 for message in st.session_state["langchain_messages"]:
     role = "user" if message.type == "human" else "assistant"
