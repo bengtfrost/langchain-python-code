@@ -7,21 +7,21 @@ from langchain_core.prompts import ChatPromptTemplate, MessagesPlaceholder
 from langchain_community.chat_message_histories import StreamlitChatMessageHistory
 from langchain_core.runnables.history import RunnableWithMessageHistory
 
-# Allow user to select model and provide API key as input
+# Sidebar configuration for model selection and API key input
 st.sidebar.title("Configuration")
 model = st.sidebar.selectbox("Select Model", ["mistral-large-latest"], index=0)
 MISTRAL_KEY = st.sidebar.text_input("Mistral API Key", type="password")
 
-# Validate user input
+# Validate user input for API key and model selection
 if not MISTRAL_KEY:
     st.error("Please provide a Mistral API Key.")
 elif not model:
     st.error("Please select a model.")
 else:
-    # Initialize the language model
+    # Initialize the language model with the specified model and API key
     llm = ChatMistral(model=model, mistral_api_key=MISTRAL_KEY)
 
-    # Define the prompt template
+    # Define the prompt template with the specified input variables and template
     prompt = ChatPromptTemplate.from_messages(
         [
             (

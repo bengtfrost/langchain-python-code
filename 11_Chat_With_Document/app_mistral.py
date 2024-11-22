@@ -16,7 +16,7 @@ from langchain_core.prompts import ChatPromptTemplate, MessagesPlaceholder
 from langchain_community.chat_message_histories import StreamlitChatMessageHistory
 from langchain_core.runnables.history import RunnableWithMessageHistory
 
-# Load the MISTRAL_KEY and HF_TOKEN from the environment variables
+# Ensure that the MISTRAL_KEY and HF_TOKEN are correctly set in the environment variables
 MISTRAL_KEY = config("MISTRAL_KEY")
 HF_TOKEN = config("HF_TOKEN")
 
@@ -28,7 +28,7 @@ if not MISTRAL_KEY or not HF_TOKEN:
 # This token is used for authentication with the Hugging Face API
 os.environ["HF_TOKEN"] = HF_TOKEN
 
-# Initialize the language model
+# Initialize the language model with the specified model and API key
 llm = ChatMistralAI(
     model="mistral-large-latest", mistral_api_key=MISTRAL_KEY
 )
@@ -60,6 +60,8 @@ contextualize_prompt = ChatPromptTemplate.from_messages(
         ("human", "{input}"),
     ]
 )
+
+# Create history-aware retriever
 history_aware_retriever = create_history_aware_retriever(
     llm, retriever, contextualize_prompt
 )
@@ -75,6 +77,7 @@ system_prompt = (
     "{context}"
 )
 
+# Create prompt template
 prompt = ChatPromptTemplate.from_messages(
     [
         ("system", system_prompt),
@@ -90,6 +93,7 @@ rag_chain = create_retrieval_chain(retriever, question_answer_chain)
 # Initialize chat history
 history = StreamlitChatMessageHistory()
 
+# Create conversational RAG chain with message history
 conversational_rag_chain = RunnableWithMessageHistory(
     rag_chain,
     lambda session_id: history,
@@ -112,11 +116,13 @@ if st.session_state["langchain_messages"]:
         with st.chat_message(role):
             st.markdown(message.content)
 
+# Get user input
 question = st.chat_input("Your Question: ")
 if question:
     with st.chat_message("user"):
         st.markdown(question)
 
+    # Retry logic for rate limit handling
     max_retries = 5
     retry_delay = 5  # seconds
     for attempt in range(max_retries):

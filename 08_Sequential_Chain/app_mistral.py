@@ -5,15 +5,16 @@ from langchain.prompts import PromptTemplate
 from langchain_core.output_parsers import StrOutputParser, JsonOutputParser
 from langchain.globals import set_debug
 
+# Enable debug mode
 set_debug(True)
 
-# Load the Mistral API key from environment variables
+# Ensure that the MISTRAL_KEY is correctly set in the environment variables
 MISTRAL_KEY = config("MISTRAL_KEY")
 
-# Initialize the language model
+# Initialize the language model with the specified model and API key
 llm = ChatMistral(model="mistral-large-latest", mistral_api_key=MISTRAL_KEY)
 
-# Define the prompt template for generating a title
+# Define the title prompt template with the specified input variables and template
 title_prompt = PromptTemplate(
     input_variables=["topic"],
     template="""
@@ -25,7 +26,7 @@ title_prompt = PromptTemplate(
     """,
 )
 
-# Define the prompt template for generating an essay
+# Define the essay prompt template with the specified input variables and template
 essay_prompt = PromptTemplate(
     input_variables=["title", "emotion"],
     template="""
