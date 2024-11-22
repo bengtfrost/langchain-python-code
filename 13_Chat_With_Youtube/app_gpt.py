@@ -53,7 +53,6 @@ question_answer_chain = create_stuff_documents_chain(llm, prompt)
 
 history = StreamlitChatMessageHistory()
 
-
 def process_youtube_url(url):
     with st.spinner("Processing YouTube video..."):
         loader = YoutubeLoader.from_youtube_url(url)
@@ -85,11 +84,9 @@ def process_youtube_url(url):
         else:
             st.error("Video has no transcript. Please try another video")
 
-
 def clear_history():
     if "langchain_messages" in st.session_state:
         del st.session_state["langchain_messages"]
-
 
 st.title("Ask YouTube Video")
 
