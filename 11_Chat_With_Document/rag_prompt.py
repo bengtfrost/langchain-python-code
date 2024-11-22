@@ -14,28 +14,35 @@ from langchain.chains import create_retrieval_chain
 MISTRAL_KEY = config("MISTRAL_KEY")
 HF_TOKEN = config("HF_TOKEN")
 
+# Validate environment variables
+if not MISTRAL_KEY or not HF_TOKEN:
+    raise ValueError("MISTRAL_KEY and HF_TOKEN must be set in the environment variables.")
+
 # Set the HF_TOKEN environment variable
 # This token is used for authentication with the Hugging Face API
 os.environ["HF_TOKEN"] = HF_TOKEN
 
+# Initialize the language model
 llm = ChatMistralAI(
     model="mistral-large-latest", mistral_api_key=MISTRAL_KEY
 )
 
+# Load and split the document
 loader = TextLoader("11_Chat_With_Document/ai-discussion.txt")
 documents = loader.load()
 text_splitter = RecursiveCharacterTextSplitter(chunk_size=1000, chunk_overlap=200)
-
 chunks = text_splitter.split_documents(documents)
 
-# Mistral embeddings are using HF_TOKEN for the rag
+# Initialize embeddings and vector store
 embeddings = MistralAIEmbeddings(
     mistral_api_key=MISTRAL_KEY, model="mistral-embed"
 )
 vector_store = Chroma.from_documents(chunks, embeddings)
 
+# Initialize retriever
 retriever = vector_store.as_retriever()
 
+# Define system prompt
 system_prompt = (
     "You are an assistant for question-answering tasks. "
     "Use the following pieces of retrieved context to answer "
@@ -53,9 +60,11 @@ prompt = ChatPromptTemplate.from_messages(
     ]
 )
 
+# Initialize question-answer chain and RAG chain
 question_answer_chain = create_stuff_documents_chain(llm, prompt)
 rag_chain = create_retrieval_chain(retriever, question_answer_chain)
 
+# Main loop to handle user input and responses
 question = input("Ask Your Question: ")
 if question:
     max_retries = 5
