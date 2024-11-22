@@ -50,6 +50,16 @@ question_answer_chain = create_stuff_documents_chain(llm, prompt)
 
 history = StreamlitChatMessageHistory()
 
+def display_transcript(docs):
+    """
+    Display the transcript of the YouTube video.
+
+    Args:
+        docs (list): List of documents containing the transcript.
+    """
+    transcript = "\n".join([doc.page_content for doc in docs])
+    st.text_area("Video Transcript", transcript, height=300)
+
 def process_youtube_url(url):
     """
     Process the YouTube URL to extract transcript and create a conversational RAG chain.
@@ -63,30 +73,32 @@ def process_youtube_url(url):
 
             docs = loader.load()
             if docs:
-                text_splitter = RecursiveCharacterTextSplitter(
-                    chunk_size=1000, chunk_overlap=200
-                )
-                chunks = text_splitter.split_documents(docs)
-                embeddings = MistralEmbeddings(
-                    mistral_api_key=MISTRAL_KEY, model="models/embedding-001"
-                )
-                vector_store = Chroma.from_documents(chunks, embeddings)
-                retriever = vector_store.as_retriever()
-                history_aware_retriever = create_history_aware_retriever(
-                    llm, retriever, contextualize_prompt
-                )
-                rag_chain = create_retrieval_chain(
-                    history_aware_retriever, question_answer_chain
-                )
-                conversational_rag_chain = RunnableWithMessageHistory(
-                    rag_chain,
-                    lambda session_id: history,
-                    input_messages_key="input",
-                    history_messages_key="chat_history",
-                    output_messages_key="answer",
-                )
-                st.session_state.crc = conversational_rag_chain
-                st.success("Video processed. Ask your questions")
+                display_transcript(docs)
+                if st.button("Confirm and Process"):
+                    text_splitter = RecursiveCharacterTextSplitter(
+                        chunk_size=1000, chunk_overlap=200
+                    )
+                    chunks = text_splitter.split_documents(docs)
+                    embeddings = MistralEmbeddings(
+                        mistral_api_key=MISTRAL_KEY, model="models/embedding-001"
+                    )
+                    vector_store = Chroma.from_documents(chunks, embeddings)
+                    retriever = vector_store.as_retriever()
+                    history_aware_retriever = create_history_aware_retriever(
+                        llm, retriever, contextualize_prompt
+                    )
+                    rag_chain = create_retrieval_chain(
+                        history_aware_retriever, question_answer_chain
+                    )
+                    conversational_rag_chain = RunnableWithMessageHistory(
+                        rag_chain,
+                        lambda session_id: history,
+                        input_messages_key="input",
+                        history_messages_key="chat_history",
+                        output_messages_key="answer",
+                    )
+                    st.session_state.crc = conversational_rag_chain
+                    st.success("Video processed. Ask your questions")
             else:
                 st.error("Video has no transcript. Please try another video")
     except Exception as e:
