@@ -118,3 +118,4 @@ if uploaded_file and add_file:
 for message in st.session_state["langchain_messages"]:
     role = "user" if message.type == "human" else "assistant"
     with st.chat_message(role):
+        st.markdown(message.content)
