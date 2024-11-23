@@ -85,6 +85,8 @@ def process_file(file):
         embeddings = GoogleGenerativeAIEmbeddings(
             google_api_key=GOOGLE_GEMINI_KEY, model="models/embedding-001"
         )
+
+        # Initialize Chroma database
         vector_store = Chroma.from_documents(chunks, embeddings)
         retriever = vector_store.as_retriever()
         history_aware_retriever = create_history_aware_retriever(
@@ -114,8 +116,6 @@ add_file = st.button("Submit File", on_click=clear_history)
 
 if uploaded_file and add_file:
     process_file(uploaded_file)
-
-
 
 for message in st.session_state["langchain_messages"]:
     role = "user" if message.type == "human" else "assistant"
