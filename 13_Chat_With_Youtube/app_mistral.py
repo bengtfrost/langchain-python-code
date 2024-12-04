@@ -1,9 +1,9 @@
 # Import necessary libraries
 from decouple import config
-from langchain_mistralai import ChatMistral, MistralEmbeddings
+from langchain_mistralai import ChatMistralAI, MistralAIEmbeddings
 from langchain.text_splitter import RecursiveCharacterTextSplitter
 from langchain_community.vectorstores import Chroma
-from langchain.chains import create_retrieval_chain, create_history_aware_retriever
+from langchain.chains import create_retrieval_chain
 from langchain_core.prompts import ChatPromptTemplate, MessagesPlaceholder
 from langchain.chains.combine_documents import create_stuff_documents_chain
 import streamlit as st
@@ -15,7 +15,7 @@ from langchain_community.document_loaders import YoutubeLoader
 MISTRAL_KEY = config("MISTRAL_KEY")
 
 # Initialize the language model
-llm = ChatMistral(
+llm = ChatMistralAI(
     model="mistral/mistral-large-2407", mistral_api_key=MISTRAL_KEY
 )
 
@@ -79,7 +79,8 @@ def process_youtube_url(url):
     """
     try:
         with st.spinner("Processing YouTube video..."):
-            loader = YoutubeLoader.from_youtube_url(url)
+            video_id = url.split("v=")[-1]
+            loader = YoutubeLoader(video_id)
 
             docs = loader.load()
             if docs:
@@ -89,25 +90,22 @@ def process_youtube_url(url):
                         chunk_size=1000, chunk_overlap=200
                     )
                     chunks = text_splitter.split_documents(docs)
-                    embeddings = MistralEmbeddings(
-                        mistral_api_key=MISTRAL_KEY, model="models/embedding-001"
+                    embeddings = MistralAIEmbeddings(
+                        mistral_api_key=MISTRAL_KEY
                     )
                     vector_store = Chroma.from_documents(chunks, embeddings)
                     retriever = vector_store.as_retriever()
-                    history_aware_retriever = create_history_aware_retriever(
-                        llm, retriever, contextualize_prompt
-                    )
                     rag_chain = create_retrieval_chain(
-                        history_aware_retriever, question_answer_chain
+                        retriever, question_answer_chain
                     )
                     conversational_rag_chain = RunnableWithMessageHistory(
                         rag_chain,
                         lambda session_id: history,
-                        input_messages_key="input",
                         history_messages_key="chat_history",
                         output_messages_key="answer",
                     )
                     st.session_state.crc = conversational_rag_chain
+                    st.session_state.transcript = docs
                     st.success("Video processed. Ask your questions")
             else:
                 st.error("Video has no transcript. Please try another video")
@@ -148,7 +146,7 @@ if question:
     if "crc" in st.session_state:
         crc = st.session_state["crc"]
         answer_chain = crc.pick("answer")
-        response = answer_chain.stream(
+        response = answer_chain.run(
             {"input": question}, config={"configurable": {"session_id": "any"}}
         )
         with st.chat_message("assistant"):
