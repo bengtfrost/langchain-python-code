@@ -12,7 +12,7 @@ def encode_image(image_path):
     with open(image_path, "rb") as image_file:
         return base64.b64encode(image_file.read()).decode("utf-8")
 
-image = encode_image("./image-1.jpg")
+image = encode_image("./NW-Doge.jpg")
 
 prompt = ChatPromptTemplate.from_messages(
     [
