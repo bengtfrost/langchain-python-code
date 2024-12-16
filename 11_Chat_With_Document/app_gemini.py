@@ -17,7 +17,7 @@ from langchain_core.runnables.history import RunnableWithMessageHistory
 GOOGLE_GEMINI_KEY = config("GOOGLE_GEMINI_KEY")
 
 llm = ChatGoogleGenerativeAI(
-    model="gemini-1.5-pro-latest", google_api_key=GOOGLE_GEMINI_KEY
+    model="gemini-2.0-flash-exp", google_api_key=GOOGLE_GEMINI_KEY
 )
 
 loader = TextLoader("./ai-discussion.txt")

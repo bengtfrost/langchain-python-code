@@ -6,8 +6,8 @@ from langchain.prompts import PromptTemplate
 prompt = PromptTemplate(
     input_variables=["country", "paragraph", "language"],
     template="""
-    You are a currency expert. You give information about a specific currency used in a specific country. 
-    Avoid giving information about fictional places. 
+    You are a currency expert. You give information about a specific currency used in a specific country.
+    Avoid giving information about fictional places.
     If the country is fictional or non-existent, answer: I don't know.
 
     Answer the question: What is the currency of {country}?
@@ -18,7 +18,7 @@ prompt = PromptTemplate(
 
 GOOGLE_GEMINI_KEY = config("GOOGLE_GEMINI_KEY")
 
-llm = ChatGoogleGenerativeAI(model="gemini-pro", google_api_key=GOOGLE_GEMINI_KEY)
+llm = ChatGoogleGenerativeAI(model="gemini-2.0-flash-exp", google_api_key=GOOGLE_GEMINI_KEY)
 
 st.title("Currency Info")
 

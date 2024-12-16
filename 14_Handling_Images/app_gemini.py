@@ -12,7 +12,7 @@ import os, base64
 GOOGLE_GEMINI_KEY = config("GOOGLE_GEMINI_KEY")
 
 llm = ChatGoogleGenerativeAI(
-    model="gemini-1.5-pro-latest", google_api_key=GOOGLE_GEMINI_KEY
+    model="gemini-2.0-flash-exp", google_api_key=GOOGLE_GEMINI_KEY
 )
 
 prompt = ChatPromptTemplate.from_messages(

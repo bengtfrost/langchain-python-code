@@ -18,7 +18,7 @@ from langchain_community.document_loaders import YoutubeLoader
 GOOGLE_GEMINI_KEY = config("GOOGLE_GEMINI_KEY")
 
 llm = ChatGoogleGenerativeAI(
-    model="gemini-1.5-pro-latest", google_api_key=GOOGLE_GEMINI_KEY
+    model="gemini-2.0-flash-exp", google_api_key=GOOGLE_GEMINI_KEY
 )
 
 contextualize_system_prompt = """Given a chat history and the latest user question \
@@ -55,7 +55,6 @@ question_answer_chain = create_stuff_documents_chain(llm, prompt)
 
 history = StreamlitChatMessageHistory()
 
-
 def process_youtube_url(url):
     with st.spinner("Processing YouTube video..."):
         loader = YoutubeLoader.from_youtube_url(url)
@@ -89,11 +88,9 @@ def process_youtube_url(url):
         else:
             st.error("Video has no transcript. Please try another video")
 
-
 def clear_history():
     if "langchain_messages" in st.session_state:
         del st.session_state["langchain_messages"]
-
 
 st.title("Ask YouTube Video")
 

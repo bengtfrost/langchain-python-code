@@ -17,7 +17,7 @@ import os
 GOOGLE_GEMINI_KEY = config("GOOGLE_GEMINI_KEY")
 
 llm = ChatGoogleGenerativeAI(
-    model="gemini-1.5-pro-latest", google_api_key=GOOGLE_GEMINI_KEY
+    model="gemini-2.0-flash-exp", google_api_key=GOOGLE_GEMINI_KEY
 )
 
 contextualize_system_prompt = """Given a chat history and the latest user question \

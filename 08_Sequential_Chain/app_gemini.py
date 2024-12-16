@@ -11,7 +11,7 @@ set_debug(True)
 GOOGLE_GEMINI_KEY = config("GOOGLE_GEMINI_KEY")
 
 # Initialize the language model
-llm = ChatGoogleGenerativeAI(model="gemini-pro", google_api_key=GOOGLE_GEMINI_KEY)
+llm = ChatGoogleGenerativeAI(model="gemini-2.0-flash-exp", google_api_key=GOOGLE_GEMINI_KEY)
 
 # Define the prompt template for generating a title
 title_prompt = PromptTemplate(

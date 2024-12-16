@@ -9,7 +9,7 @@ from langchain_core.runnables.history import RunnableWithMessageHistory
 
 # Allow user to select model and provide API key as input
 st.sidebar.title("Configuration")
-model = st.sidebar.selectbox("Select Model", ["gemini-pro", "gemini-pro-vision"], index=0)
+model = st.sidebar.selectbox("Select Model", ["gemini-2.0-flash-exp", "gemini-pro-vision"], index=0)
 GOOGLE_GEMINI_KEY = st.sidebar.text_input("Google Gemini API Key", type="password")
 
 # Validate user input

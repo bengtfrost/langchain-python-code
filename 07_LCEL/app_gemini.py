@@ -9,7 +9,7 @@ set_debug(True)
 
 GOOGLE_GEMINI_KEY = config("GOOGLE_GEMINI_KEY")
 
-llm = ChatGoogleGenerativeAI(model="gemini-pro", google_api_key=GOOGLE_GEMINI_KEY)
+llm = ChatGoogleGenerativeAI(model="gemini-2.0-flash-exp", google_api_key=GOOGLE_GEMINI_KEY)
 
 title_prompt = PromptTemplate(
     input_variables=["topic"],

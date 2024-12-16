@@ -24,7 +24,7 @@ if not google_gemini_key:
     st.stop()
 
 llm = ChatGoogleGenerativeAI(
-    model="gemini-1.5-pro-latest", google_api_key=google_gemini_key
+    model="gemini-2.0-flash-exp", google_api_key=google_gemini_key
 )
 
 contextualize_system_prompt = """Given a chat history and the latest user question \
