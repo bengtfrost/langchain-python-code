@@ -14,7 +14,7 @@ from langchain_core.runnables.history import RunnableWithMessageHistory
 
 import os
 
-llm = ChatOllama(model="gemma2:2b")
+llm = ChatOllama(model="phi3.5:latest")
 
 contextualize_system_prompt = """Given a chat history and the latest user question \
 which might reference context in the chat history, formulate a standalone question \

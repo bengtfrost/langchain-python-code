@@ -15,7 +15,7 @@ prompt = PromptTemplate(
     """,
 )
 
-llm = ChatOllama(model="gemma2:2b")
+llm = ChatOllama(model="phi3.5:latest")
 
 st.title("Currency Info")
 
