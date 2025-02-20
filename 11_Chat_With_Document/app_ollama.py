@@ -14,7 +14,7 @@ from langchain_core.prompts import ChatPromptTemplate, MessagesPlaceholder
 from langchain_community.chat_message_histories import StreamlitChatMessageHistory
 from langchain_core.runnables.history import RunnableWithMessageHistory
 
-llm = ChatOllama(model="phi3.5:latest")
+llm = ChatOllama(model="deepseek-r1:8b")
 
 loader = TextLoader("./ai-discussion.txt")
 documents = loader.load()

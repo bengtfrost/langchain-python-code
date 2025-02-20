@@ -1,6 +1,6 @@
 from langchain_ollama.chat_models import ChatOllama
 
-llm = ChatOllama(model="phi3.5:latest")
+llm = ChatOllama(model="deepseek-r1:8b")
 
 print("Q & A With AI")
 print("=============")

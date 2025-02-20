@@ -7,7 +7,7 @@ from langchain_community.chat_message_histories import StreamlitChatMessageHisto
 from langchain_core.runnables.history import RunnableWithMessageHistory
 import os, base64
 
-llm = ChatOllama(model="phi3.5:latest")
+llm = ChatOllama(model="deepseek-r1:8b")
 
 prompt = ChatPromptTemplate.from_messages(
     [

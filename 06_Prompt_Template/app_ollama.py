@@ -15,7 +15,7 @@ prompt = PromptTemplate(
     """,
 )
 
-llm = ChatOllama(model="phi3.5:latest")
+llm = ChatOllama(model="deepseek-r1:8b")
 
 st.title("Currency Info")
 

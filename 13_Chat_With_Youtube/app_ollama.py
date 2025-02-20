@@ -15,7 +15,7 @@ from langchain_core.runnables.history import RunnableWithMessageHistory
 # Import YouTubeLoader
 from langchain_community.document_loaders import YoutubeLoader
 
-llm = ChatOllama(model="phi3.5:latest")
+llm = ChatOllama(model="deepseek-r1:8b")
 
 contextualize_system_prompt = """Given a chat history and the latest user question \
 which might reference context in the chat history, formulate a standalone question \

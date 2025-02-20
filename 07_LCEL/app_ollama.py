@@ -6,7 +6,7 @@ from langchain.globals import set_debug
 
 set_debug(True)
 
-llm = ChatOllama(model="phi3.5:latest")
+llm = ChatOllama(model="deepseek-r1:8b")
 
 title_prompt = PromptTemplate(
     input_variables=["topic"],
